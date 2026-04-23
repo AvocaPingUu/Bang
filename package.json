@@ -1,0 +1,20 @@
+{
+  "name": "bang",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=client",
+    "electron": "npm run electron --workspace=client",
+    "build:win": "npm run build:win --workspace=client",
+    "build:mac": "npm run build:mac --workspace=client"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
