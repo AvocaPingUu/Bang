@@ -1,0 +1,18 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #1A0A00;
+  font-family: 'IM Fell English', serif;
+  color: #F5E6D3;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+::-webkit-scrollbar { display: none; }
