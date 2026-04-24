@@ -44,8 +44,8 @@ When compacting: preserve list of modified files, current game state implemented
 ## Next Steps
 - [x] Monorepo Struktur aufsetzen
 - [x] Server: Socket.io Raum-System
-- [ ] **Server: Kern-Spiellogik** ← next
-- [ ] Client: Spieltisch UI
+- [x] Server: Kern-Spiellogik
+- [ ] **Client: Spieltisch UI** ← next
 - [ ] Client: SVG Kartendesigns
 - [ ] Bot-KI
 - [ ] Electron Build

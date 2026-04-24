@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { registerRoomHandlers } from './rooms/roomHandlers';
+import { registerGameHandlers } from './rooms/gameHandler';
 
 const app = express();
 const httpServer = createServer(app);
@@ -18,6 +19,7 @@ app.get('/health', (_req, res) => {
 io.on('connection', (socket) => {
   console.log(`Spieler verbunden: ${socket.id}`);
   registerRoomHandlers(io, socket);
+  registerGameHandlers(io, socket);
 });
 
 httpServer.listen(PORT, () => {

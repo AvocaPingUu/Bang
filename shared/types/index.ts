@@ -94,16 +94,24 @@ export interface GameRoom {
   players: Player[];
   maxPlayers: number;
   status: 'waiting' | 'playing' | 'finished';
+  characterDraft: boolean;
+}
+
+// Charakter-Draft: welche zwei Optionen jeder Spieler hat und ob er schon gewählt hat
+export interface CharacterDraftEntry {
+  options: [Character, Character];
+  chosen: boolean;
 }
 
 // Schwebende Reaktion — z.B. Spieler muss auf Bang! reagieren
 export interface PendingReaction {
   type: 'respond_bang' | 'respond_duel' | 'respond_indians' | 'choose_general_store';
-  sourcePlayerId: string;    // wer hat die Aktion ausgelöst
-  targetPlayerId: string;    // wer muss reagieren
-  missedRequired: number;    // für Slab the Killer: 1 oder 2
-  duelCurrentId?: string;    // für Duel: wer ist gerade dran
-  generalStoreCards?: Card[]; // für General Store: verfügbare Karten
+  sourcePlayerId: string;      // wer hat die Aktion ausgelöst
+  targetPlayerId: string;      // wer muss reagieren
+  missedRequired: number;      // für Slab the Killer: 1 oder 2
+  duelCurrentId?: string;      // für Duel: wer ist gerade dran
+  generalStoreCards?: Card[];  // für General Store: verfügbare Karten
+  remainingTargets?: string[]; // für Gatling/Indians/GeneralStore: noch ausstehende Spieler-IDs
 }
 
 // Spielzustand
@@ -118,4 +126,6 @@ export interface GameState {
   pendingReaction: PendingReaction | null;
   dynamiteOwnerId: string | null;  // wer hat Dynamit vor sich liegen
   turn: number;                    // Rundenzähler (für Dynamit-3-Runden-Regel)
+  // Charakter-Draft: nur vorhanden wenn characterDraft aktiviert ist
+  draftPending?: Record<string, CharacterDraftEntry>;
 }

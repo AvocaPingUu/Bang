@@ -7,7 +7,13 @@ import {
   allReady,
   getRoom,
   markPlaying,
+  setCharacterDraft,
 } from './RoomManager';
+import {
+  handleGameStart,
+  registerSocketRoom,
+  unregisterSocketRoom,
+} from './gameHandler';
 
 // Socket-zu-Raum Zuordnung für schnelles Nachschlagen beim Disconnect
 const socketRoomMap = new Map<string, string>();
@@ -18,6 +24,7 @@ export function registerRoomHandlers(io: Server, socket: Socket): void {
     const room = createRoom(socket.id, data.name);
     socket.join(room.id);
     socketRoomMap.set(socket.id, room.id);
+    registerSocketRoom(socket.id, room.id);
     socket.emit('room_created', { room });
   });
 
@@ -33,6 +40,7 @@ export function registerRoomHandlers(io: Server, socket: Socket): void {
     const { room } = result;
     socket.join(room.id);
     socketRoomMap.set(socket.id, room.id);
+    registerSocketRoom(socket.id, room.id);
 
     // Dem neuen Spieler den Raumzustand schicken
     socket.emit('room_joined', { room });
@@ -47,6 +55,23 @@ export function registerRoomHandlers(io: Server, socket: Socket): void {
     if (room.players.length >= room.maxPlayers) {
       io.to(room.id).emit('room_full', { room });
     }
+  });
+
+  // Charakter-Draft aktivieren/deaktivieren (nur Host)
+  socket.on('set_character_draft', (data: { enabled: boolean }) => {
+    const roomId = socketRoomMap.get(socket.id);
+    if (!roomId) return;
+
+    const room = getRoom(roomId);
+    if (!room || room.hostId !== socket.id) {
+      socket.emit('action_error', { message: 'Nur der Host kann den Charakter-Draft ändern' });
+      return;
+    }
+
+    const updated = setCharacterDraft(roomId, data.enabled);
+    if (!updated) return;
+
+    io.to(roomId).emit('room_settings_changed', { characterDraft: updated.characterDraft });
   });
 
   // Bereit-Status ändern
@@ -67,6 +92,7 @@ export function registerRoomHandlers(io: Server, socket: Socket): void {
     if (allReady(room)) {
       markPlaying(roomId);
       io.to(roomId).emit('game_start', { room });
+      handleGameStart(io, roomId);
     }
   });
 
@@ -76,6 +102,7 @@ export function registerRoomHandlers(io: Server, socket: Socket): void {
     if (!roomId) return;
 
     socketRoomMap.delete(socket.id);
+    unregisterSocketRoom(socket.id);
     const room = leaveRoom(roomId, socket.id);
 
     if (room) {

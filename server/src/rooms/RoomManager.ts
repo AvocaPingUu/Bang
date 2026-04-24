@@ -6,6 +6,7 @@ export interface Room {
   players: LobbyPlayer[];
   maxPlayers: number;
   status: 'waiting' | 'playing';
+  characterDraft: boolean;
 }
 
 const rooms = new Map<string, Room>();
@@ -28,8 +29,16 @@ export function createRoom(hostId: string, hostName: string): Room {
     players: [{ id: hostId, name: hostName, isReady: false }],
     maxPlayers: 7,
     status: 'waiting',
+    characterDraft: false,
   };
   rooms.set(id, room);
+  return room;
+}
+
+export function setCharacterDraft(roomId: string, enabled: boolean): Room | null {
+  const room = rooms.get(roomId);
+  if (!room || room.status !== 'waiting') return null;
+  room.characterDraft = enabled;
   return room;
 }
 

@@ -140,14 +140,10 @@ export function playGatling(
     type: 'respond_bang',
     sourcePlayerId: attackerId,
     targetPlayerId: targets[0].id,
-    missedRequired: 1, // Gatling zählt nicht als Slab-Angriff
+    missedRequired: 1,
+    remainingTargets: targets.slice(1).map((p) => p.id),
   };
   s.turnPhase = 'respond';
-
-  // Restliche Ziele in State speichern (via generalStoreCards als Workaround für IDs)
-  // Wir kodieren die verbleibenden Ziel-IDs als "generalStoreCards" mit Typ-Missbrauch
-  // Sauberer: PendingReaction um gatlingTargets erweitern
-  (s.pendingReaction as any).remainingTargets = targets.slice(1).map((p) => p.id);
 
   return { state: s };
 }
@@ -175,8 +171,8 @@ export function playIndians(
     sourcePlayerId: attackerId,
     targetPlayerId: targets[0].id,
     missedRequired: 1,
+    remainingTargets: targets.slice(1).map((p) => p.id),
   };
-  (s.pendingReaction as any).remainingTargets = targets.slice(1).map((p) => p.id);
   s.turnPhase = 'respond';
 
   return { state: s };
@@ -250,8 +246,8 @@ export function playGeneralStore(
     targetPlayerId: order[0].id,
     missedRequired: 0,
     generalStoreCards: revealed,
+    remainingTargets: order.slice(1).map((p) => p.id),
   };
-  (s.pendingReaction as any).remainingTargets = order.slice(1).map((p) => p.id);
   s.turnPhase = 'respond';
 
   return { state: s };
